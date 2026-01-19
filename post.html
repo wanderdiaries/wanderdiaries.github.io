@@ -5,7 +5,7 @@
 <title>Story View</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<meta name="google-site-verification" content="WyZFi3qrHuqWHG4BQJiKKfXSTGeh1BMZEpv6_i9qORI" />
+
 <style>
 
     body {
@@ -265,6 +265,121 @@
         text-decoration: none;
         box-shadow: 0 4px 12px rgba(255,255,255,0.2);
     }
+
+    /* ===== TRAVEL GUIDE PRO UI ===== */
+
+.travel-wrapper {
+    max-width: 900px;
+    margin: 50px auto;
+}
+
+.travel-title {
+    text-align: center;
+    font-size: 34px;
+    font-family: Georgia, serif;
+    margin-bottom: 25px;
+}
+
+/* MAP CARD */
+.map-card {
+    background: white;
+    padding: 18px;
+    border-radius: 22px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    margin-bottom: 35px;
+}
+
+.map-card iframe {
+    width: 100%;
+    height: 420px;
+    border-radius: 18px;
+    border: none;
+}
+
+/* TABS */
+.travel-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 25px;
+}
+
+.tab-btn {
+    padding: 12px 26px;
+    border-radius: 40px;
+    border: none;
+    font-weight: 600;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.tab-btn:hover {
+    transform: translateY(-3px);
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, #203a80, #3b5fdc);
+    color: white;
+    box-shadow: 0 12px 30px rgba(32,58,128,0.45);
+}
+
+/* CONTENT */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* TRAVEL CARDS */
+.travel-card {
+    background: white;
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.1);
+    margin-bottom: 18px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.travel-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 45px rgba(0,0,0,0.2);
+}
+
+.travel-card h4 {
+    margin-bottom: 10px;
+    color: #203a80;
+}
+
+.price-tag {
+    font-weight: bold;
+    color: #2c4be3;
+}
+
+/* TRAIN ROW */
+.train-row {
+    padding: 10px 0;
+    border-bottom: 1px dashed #ddd;
+}
+
+.train-details {
+    font-size: 14px;
+    color: #555;
+    margin-top: 4px;
+}
+
+/* EMPTY */
+.empty-text {
+    text-align: center;
+    color: #777;
+    font-style: italic;
+    padding: 25px;
+}
+
 </style>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -574,7 +689,6 @@ const params = new URLSearchParams(window.location.search);
 const postId = params.get("id");
 
 async function loadPost() {
-
     const res = await fetch(`https://sunildkt1.pythonanywhere.com/api/post/${postId}`);
     const post = await res.json();
 
@@ -588,10 +702,57 @@ async function loadPost() {
     document.getElementById("postDate").innerText = post.datetime;
 
     document.getElementById("postDesc").innerHTML = marked.parse(post.description);
-
     document.getElementById("postThumbnail").onclick = () => openModal(post.thumbnail);
 
-    renderPlaces(post.places);
+   renderTravel(post.travel || {});
+renderPlaces(post.places || []);
+
+}
+
+
+function renderBusCards(list) {
+    if (!list.length) return `<p class="empty-text">No bus routes available</p>`;
+
+    return list.map(b => `
+        <div class="travel-card">
+            <h4>🚌 ${b.stand}</h4>
+            <div class="price-tag">₹ ${b.price || "-"}</div>
+            <p>${b.details || ""}</p>
+        </div>
+    `).join("");
+}
+
+function renderFlightCards(list) {
+    if (!list.length) return `<p class="empty-text">No flights available</p>`;
+
+    return list.map(f => `
+        <div class="travel-card">
+            <h4>✈️ ${f.airport}</h4>
+            <div class="price-tag">₹ ${f.price || "-"}</div>
+            <p>${f.details || ""}</p>
+        </div>
+    `).join("");
+}
+
+function renderTrainCards(stations) {
+    if (!stations.length) return `<p class="empty-text">No train routes available</p>`;
+
+    let html = "";
+    stations.forEach(st => {
+        html += `
+            <div class="travel-card">
+                <h4>🚆 ${st.station}</h4>
+                ${(st.trains || []).map(t => `
+                    <div class="train-row">
+                        ${formatClassPrice(t.price)}
+                        <div class="train-details">${t.details || ""}</div>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+    });
+
+    return html;
 }
 
 
@@ -649,6 +810,29 @@ loadPost();
 </script>
 
 <script>
+function formatClassPrice(text) {
+    if (!text) return "-";
+
+    return text.split(",").map(part => {
+        const p = part.trim();
+        const match = p.match(/([\d,]+)\s*-?\s*(\w+)/i);
+        if (!match) return p;
+
+        let price = match[1];
+        let cls = match[2].toUpperCase();
+
+        if (cls === "1A") cls = "First AC (1A)";
+        if (cls === "2A") cls = "Second AC (2A)";
+        if (cls === "3A") cls = "Third AC (3A)";
+        if (cls.includes("SLEEPER")) cls = "Sleeper";
+
+        return `<strong>${cls}</strong> — ₹${price}`;
+    }).join("<br>");
+}
+</script>
+
+
+<script>
 async function loadRelatedBlogs() {
     try {
         const res = await fetch("https://sunildkt1.pythonanywhere.com/api/posts");
@@ -691,8 +875,80 @@ async function loadRelatedBlogs() {
 loadRelatedBlogs();
 </script>
 
+<script>
+
+function renderTravel(travel) {
+    if (!travel || typeof travel !== "object") return;
+
+    const container = document.createElement("div");
+    container.className = "travel-wrapper";
+
+    const busId = "busTab_" + Date.now();
+    const trainId = "trainTab_" + Date.now();
+    const flightId = "flightTab_" + Date.now();
+
+    container.innerHTML = `
+        <h2 class="travel-title">🧭 Travel Guide</h2>
+
+        <p style="
+            text-align:center;
+            max-width:700px;
+            margin: 10px auto 30px;
+            color:#555;
+            font-size:17px;
+            line-height:1.7;
+        ">
+            Here’s everything you need to know to reach this destination — explore routes, fares, and transport options by bus, train, or flight.
+        </p>
+
+        <!-- MAP -->
+        ${travel.map ? `
+        <div class="map-card">
+            <iframe src="${travel.map}" loading="lazy" allowfullscreen></iframe>
+        </div>
+        ` : `<p class="empty-text">Map not available</p>`}
+
+        <!-- TABS -->
+        <div class="travel-tabs">
+            <button class="tab-btn active" onclick="switchTab(event, '${busId}')">🚌 Bus</button>
+            <button class="tab-btn" onclick="switchTab(event, '${trainId}')">🚆 Train</button>
+            <button class="tab-btn" onclick="switchTab(event, '${flightId}')">✈️ Flight</button>
+        </div>
+
+        <!-- BUS -->
+        <div id="${busId}" class="tab-content active">
+            ${renderBusCards(travel.bus || [])}
+        </div>
+
+        <!-- TRAIN -->
+        <div id="${trainId}" class="tab-content">
+            ${renderTrainCards(travel.train || [])}
+        </div>
+
+        <!-- FLIGHT -->
+        <div id="${flightId}" class="tab-content">
+            ${renderFlightCards(travel.flight || [])}
+        </div>
+    `;
+const places = document.getElementById("placesContainer");
+document.body.insertBefore(container, places);
+
+}
+
+
+function switchTab(evt, tabId) {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+
+    evt.currentTarget.classList.add("active");
+    document.getElementById(tabId).classList.add("active");
+}
+
+
+</script>
+
+
 
 </body>
 </html>
-
 
