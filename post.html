@@ -243,6 +243,32 @@
         box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     }
 
+    .gpt-block {
+    padding: 10px 0;
+}
+
+.gpt-block h4 {
+    font-size: 18px;
+    color: #203a80;
+    margin-bottom: 6px;
+}
+
+.gpt-block p {
+    font-size: 16px;
+    color: #444;
+    line-height: 1.8;
+}
+
+.gpt-block hr {
+    margin: 18px 0;
+    border-top: 1px dashed #ddd;
+}
+
+.vibe {
+    font-style: italic;
+    color: #666;
+}
+
     .modal-close {
         position: absolute;
         top: 20px;
@@ -380,8 +406,15 @@
     padding: 25px;
 }
 
+
 </style>
 
+<script>
+marked.setOptions({
+  gfm: true,
+  breaks: true
+});
+</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
@@ -709,53 +742,6 @@ renderPlaces(post.places || []);
 
 }
 
-
-function renderBusCards(list) {
-    if (!list.length) return `<p class="empty-text">No bus routes available</p>`;
-
-    return list.map(b => `
-        <div class="travel-card">
-            <h4>🚌 ${b.stand}</h4>
-            <div class="price-tag">₹ ${b.price || "-"}</div>
-            <p>${b.details || ""}</p>
-        </div>
-    `).join("");
-}
-
-function renderFlightCards(list) {
-    if (!list.length) return `<p class="empty-text">No flights available</p>`;
-
-    return list.map(f => `
-        <div class="travel-card">
-            <h4>✈️ ${f.airport}</h4>
-            <div class="price-tag">₹ ${f.price || "-"}</div>
-            <p>${f.details || ""}</p>
-        </div>
-    `).join("");
-}
-
-function renderTrainCards(stations) {
-    if (!stations.length) return `<p class="empty-text">No train routes available</p>`;
-
-    let html = "";
-    stations.forEach(st => {
-        html += `
-            <div class="travel-card">
-                <h4>🚆 ${st.station}</h4>
-                ${(st.trains || []).map(t => `
-                    <div class="train-row">
-                        ${formatClassPrice(t.price)}
-                        <div class="train-details">${t.details || ""}</div>
-                    </div>
-                `).join("")}
-            </div>
-        `;
-    });
-
-    return html;
-}
-
-
 function renderPlaces(places) {
     const container = document.getElementById("placesContainer");
     container.innerHTML = "";
@@ -877,15 +863,75 @@ loadRelatedBlogs();
 
 <script>
 
+function renderBusGPT(list) {
+    if (!list.length) return `<p class="empty-text">No bus information available.</p>`;
+
+    return list.map(b => `
+        <div class="gpt-block">
+            ${marked.parse(`
+### 🚌 ${b.stand}
+
+${b.details || ""}
+
+${b.distance ? `**Distance from Taj Mahal:** ${b.distance}` : ""}
+
+${b.vibe ? `**Vibe:** ${b.vibe}` : ""}
+            `)}
+        </div>
+    `).join("<hr>");
+}
+
+function renderTrainGPT(list) {
+    if (!list.length) return `<p class="empty-text">No train information available.</p>`;
+
+    return list.map(t => `
+        <div class="gpt-block">
+            ${marked.parse(`
+### 🚆 ${t.station}
+
+${t.details || ""}
+
+${t.distance ? `**Distance from Taj Mahal:** ${t.distance}` : ""}
+
+${t.vibe ? `**Vibe:** ${t.vibe}` : ""}
+            `)}
+        </div>
+    `).join("<hr>");
+}
+
+
+function renderFlightGPT(list) {
+    if (!list.length) return `<p class="empty-text">No flight information available.</p>`;
+
+    return list.map(f => `
+        <div class="gpt-block">
+            ${marked.parse(`
+### ✈️ ${f.airport}
+
+${f.details || ""}
+
+${f.distance ? `**Distance from Taj Mahal:** ${f.distance}` : ""}
+
+${f.vibe ? `**Vibe:** ${f.vibe}` : ""}
+            `)}
+        </div>
+    `).join("<hr>");
+}
+
+
 function renderTravel(travel) {
     if (!travel || typeof travel !== "object") return;
+
+    const old = document.querySelector(".travel-wrapper");
+    if (old) old.remove();
 
     const container = document.createElement("div");
     container.className = "travel-wrapper";
 
-    const busId = "busTab_" + Date.now();
-    const trainId = "trainTab_" + Date.now();
-    const flightId = "flightTab_" + Date.now();
+    const uid = Math.random().toString(36).slice(2);
+    const busId = "busTab_" + uid;
+    const trainId = "trainTab_" + uid;
+    const flightId = "flightTab_" + uid;
 
     container.innerHTML = `
         <h2 class="travel-title">🧭 Travel Guide</h2>
@@ -901,47 +947,43 @@ function renderTravel(travel) {
             Here’s everything you need to know to reach this destination — explore routes, fares, and transport options by bus, train, or flight.
         </p>
 
-        <!-- MAP -->
         ${travel.map ? `
         <div class="map-card">
             <iframe src="${travel.map}" loading="lazy" allowfullscreen></iframe>
-        </div>
-        ` : `<p class="empty-text">Map not available</p>`}
+        </div>` : `<p class="empty-text">Map not available</p>`}
 
-        <!-- TABS -->
         <div class="travel-tabs">
             <button class="tab-btn active" onclick="switchTab(event, '${busId}')">🚌 Bus</button>
             <button class="tab-btn" onclick="switchTab(event, '${trainId}')">🚆 Train</button>
             <button class="tab-btn" onclick="switchTab(event, '${flightId}')">✈️ Flight</button>
         </div>
 
-        <!-- BUS -->
         <div id="${busId}" class="tab-content active">
-            ${renderBusCards(travel.bus || [])}
+            ${renderBusGPT(travel.bus || [])}
         </div>
 
-        <!-- TRAIN -->
         <div id="${trainId}" class="tab-content">
-            ${renderTrainCards(travel.train || [])}
+            ${renderTrainGPT(travel.train || [])}
         </div>
 
-        <!-- FLIGHT -->
         <div id="${flightId}" class="tab-content">
-            ${renderFlightCards(travel.flight || [])}
+            ${renderFlightGPT(travel.flight || [])}
         </div>
     `;
-const places = document.getElementById("placesContainer");
-document.body.insertBefore(container, places);
 
+    const places = document.getElementById("placesContainer");
+    document.body.insertBefore(container, places);
 }
 
 
 function switchTab(evt, tabId) {
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+    const wrapper = evt.currentTarget.closest(".travel-wrapper");
+
+    wrapper.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    wrapper.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
 
     evt.currentTarget.classList.add("active");
-    document.getElementById(tabId).classList.add("active");
+    wrapper.querySelector("#" + tabId).classList.add("active");
 }
 
 
