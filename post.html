@@ -450,13 +450,7 @@ marked.setOptions({
 
 
     <style>
-        /* =============== GENERAL =============== */
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            color: #222;
-        }
-
+    
         .custom-container {
             max-width: 1300px;
             margin: auto;
@@ -478,27 +472,67 @@ marked.setOptions({
         }
 
 
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 22px 40px;
-            font-size: 15px;
-        }
+.navbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 40px;
+    background:white;
+}
 
-        .nav-left {
-            font-family: Georgia, serif;
-            font-size: 22px;
-            letter-spacing: 1px;
-        }
+.nav-left{
+    font-family:Georgia, serif;
+    font-size:22px;
+}
 
-        .nav-right a {
-            margin-left: 25px;
-            font-size: 14px;
-            font-weight: 600;
-        }
+.nav-right{
+    display:flex;
+    gap:25px;
+}
 
-        /* =============== HERO BANNER =============== */
+.nav-link{
+    font-size:14px;
+    font-weight:600;
+}
+
+
+.menu-toggle{
+    display:none;
+    font-size:22px;
+    cursor:pointer;
+}
+
+
+@media (max-width:768px){
+
+    .menu-toggle{
+        display:block;
+    }
+
+    .nav-right{
+        position:absolute;
+        top:70px;
+        right:0;
+        background:white;
+        width:100%;
+        flex-direction:column;
+        align-items:center;
+        display:none;
+        padding:20px 0;
+        box-shadow:0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .nav-right a{
+        padding:12px 0;
+        width:100%;
+        text-align:center;
+    }
+
+    .nav-right.active{
+        display:flex;
+    }
+}
+
         .hero-section {
             width: 100%;
             height: 85vh;
@@ -674,21 +708,27 @@ marked.setOptions({
 
 <body>
 
-     <div class="navbar">
-            <div class="nav-left"><a href="index.html" class="font-weight-bold">
-                  SSTOURBLOG
-                </a></div>
-        <div class="nav-right">
-           <a href="index.html" class="nav-link">Home</a>
-            <a href="about.html" class="nav-link">About</a>
-            <a href="trips.html" class="nav-link">Trips</a>
-            <a href="blog.html" class="nav-link">Blog</a>
-           <a href="contact.html" class="nav-link">Contact</a>
-            <a href="https://sunildkt1.pythonanywhere.com/static/login.html" class="nav-link">Admin Panel</a>
+    <div class="navbar">
 
-
-        </div>
+    <div class="nav-left">
+        <a href="index.html" class="font-weight-bold">SSTOURBLOG</a>
     </div>
+
+    <!-- Toggle Button -->
+    <div class="menu-toggle" onclick="toggleMenu()">
+        <i class="fa fa-bars"></i>
+    </div>
+
+    <div class="nav-right" id="navMenu">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="trips.html" class="nav-link">Trips</a>
+        <a href="blog.html" class="nav-link">Blog</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+        <a href="https://sunildkt1.pythonanywhere.com/static/login.html" class="nav-link">Admin Panel</a>
+    </div>
+
+</div>
 
 <div class="container">
     <h1 class="post-title" id="postTitle">Loading...</h1>
@@ -1018,7 +1058,12 @@ function switchTab(evt, tabId) {
 
 </script>
 
-
+<script>
+function toggleMenu(){
+    const menu = document.getElementById("navMenu");
+    menu.classList.toggle("active");
+}
+</script>
 
 </body>
 </html>
