@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Travel Details</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+body{font-family:Poppins,sans-serif;background:#f5f7fa}
+.hero-img{height:420px;object-fit:cover}
+.details{background:#fff;margin-top:-30px;border-radius:30px 30px 0 0;padding:20px;position:relative;z-index:5}
+.cardx{background:#fff;border-radius:18px;padding:15px;box-shadow:0 5px 20px rgba(0,0,0,.06)}
+.gallery-scroll,.nearby-scroll{display:flex;overflow:auto;gap:12px}
+.gallery-scroll img{width:140px;height:110px;object-fit:cover;border-radius:12px}
+.nearby-card{min-width:180px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 5px 20px rgba(0,0,0,.06)}
+.nearby-card img{width:100%;height:120px;object-fit:cover}
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;padding:12px;box-shadow:0 -5px 20px rgba(0,0,0,.08)}
+.spacer{height:90px}
+</style>
+</head>
+<body>
+
+<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+<div class="carousel-inner" id="heroImages"></div>
+<button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+<button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+</div>
+
+<div class="details">
+<div class="d-flex justify-content-between">
+<div>
+<h2 id="placeTitle"></h2>
+<div id="placeLocation"></div>
+</div>
+<div>
+<button class="btn btn-light" id="shareBtn"><i class="fa fa-share"></i></button>
+</div>
+</div>
+
+<div class="row g-2 mt-2">
+<div class="col-4"><div class="cardx text-center"><div id="openTime"></div><small>Open</small></div></div>
+<div class="col-4"><div class="cardx text-center"><div id="ticketPrice"></div><small>Entry</small></div></div>
+<div class="col-4"><div class="cardx text-center"><div id="totalDays"></div><small>Days</small></div></div>
+</div>
+
+<div class="cardx mt-3">
+<h5>About</h5>
+<div id="placeDescription"></div>
+</div>
+
+<div class="cardx mt-3">
+<h5>Opening Hours</h5>
+<div id="openingDays"></div>
+<div><b id="openingTime"></b> - <b id="closingTime"></b></div>
+</div>
+
+<div class="cardx mt-3">
+<h5>Ticket Prices</h5>
+<div class="row">
+<div class="col">Indian<br><b id="indianPrice"></b></div>
+<div class="col">Foreigner<br><b id="foreignerPrice"></b></div>
+<div class="col">Child<br><b id="childPrice"></b></div>
+</div>
+</div>
+
+<div class="cardx mt-3">
+<h5>Best Time To Visit</h5>
+<div id="bestTime"></div>
+</div>
+
+<div class="cardx mt-3">
+<h5>Facilities</h5>
+<ul id="facilitiesList"></ul>
+</div>
+
+<a id="mapBtn" target="_blank" class="btn btn-success w-100 mt-3">Open Map</a>
+<a id="websiteBtn" target="_blank" class="btn btn-outline-primary w-100 mt-2">Official Website</a>
+
+<h5 class="mt-4">Gallery</h5>
+<div id="galleryContainer" class="gallery-scroll"></div>
+
+<h5 class="mt-4">Nearby Attractions</h5>
+<div id="nearbyContainer" class="nearby-scroll"></div>
+</div>
+
+<div class="spacer"></div>
+
+<div class="bottom-bar d-flex justify-content-between">
+<div><small>Entry Fee</small><h5 id="bottomPrice"></h5></div>
+<button class="btn btn-success" id="visitBtn">Plan Visit</button>
+</div>
+
+<script>
+const id=new URLSearchParams(location.search).get("id");
+
+async function loadPlace(){
+const res=await fetch(`https://tourandtravels-nine.vercel.app/api/get/sundarikanya?id=${id}`);
+const data=await res.json();
+
+placeTitle.textContent=data.title||"";
+placeLocation.innerHTML=`<i class="fa-solid fa-location-dot"></i> ${data.location||''}`;
+placeDescription.innerHTML=marked.parse(data.description||'');
+
+openTime.textContent=data.opening_time||'-';
+ticketPrice.textContent='₹'+(data.ticket_prices?.indian||0);
+totalDays.textContent=(data.opening_days||[]).length;
+
+openingDays.innerHTML=(data.opening_days||[]).join("<br>");
+openingTime.textContent=data.opening_time||'';
+closingTime.textContent=data.closing_time||'';
+
+indianPrice.textContent='₹'+(data.ticket_prices?.indian||0);
+foreignerPrice.textContent='₹'+(data.ticket_prices?.foreigner||0);
+childPrice.textContent='₹'+(data.ticket_prices?.child||0);
+
+bestTime.textContent=data.best_time_to_visit||'';
+facilitiesList.innerHTML=(data.facilities||[]).map(x=>`<li>${x}</li>`).join('');
+
+mapBtn.href=data.map_url||'#';
+websiteBtn.href=data.official_website||'#';
+
+bottomPrice.textContent=(data.ticket_prices?.indian||0)==0?'Free':'₹'+data.ticket_prices.indian;
+
+visitBtn.onclick=()=>window.open(data.map_url,'_blank');
+
+const images=[data.thumbnail,...(data.videourl||[])].filter(Boolean);
+
+heroImages.innerHTML=images.map((img,i)=>`
+<div class="carousel-item ${i===0?'active':''}">
+<img src="${img}" class="d-block w-100 hero-img">
+</div>`).join('');
+
+galleryContainer.innerHTML=images.map(img=>`<img src="${img}">`).join('');
+
+if(data.category?.length){
+const cat=data.category[0];
+const nres=await fetch(`https://tourandtravels-nine.vercel.app/api/get/sundarikanya1?category=${encodeURIComponent(cat)}&page=1`);
+const nd=await nres.json();
+
+nearbyContainer.innerHTML=(nd.data||[])
+.filter(x=>x.id!=data.id)
+.slice(0,10)
+.map(x=>`
+<a href="details.html?id=${x.id}" style="text-decoration:none;color:black">
+<div class="nearby-card">
+<img src="${x.thumbnail}">
+<div class="p-2">${x.title}</div>
+</div>
+</a>`).join('');
+}
+
+shareBtn.onclick=()=>{
+if(navigator.share){
+navigator.share({title:data.title,url:location.href});
+}
+};
+}
+loadPlace();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
