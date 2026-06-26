@@ -4,727 +4,544 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Travel App</title>
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Font Awesome -->
+    <!-- Font Awesome 6 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 
-    <!-- AOS -->
+    <!-- AOS (Animate on Scroll) -->
     <link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet">
 
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
+        :root {
+            --bg-gradient-start: #f4f6f3;
+            --bg-gradient-end: #e5ebe5;
+            --text-main: #2c332e;
+            --text-muted: #707972;
+            --search-bg: #e2e8e2;
+            --card-shadow: 0 12px 30px rgba(112, 121, 114, 0.05);
+            --nav-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        }
+
         * {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            letter-spacing: -0.01em;
         }
 
         body {
-            background: #f6f8fb;
+            background: linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
             padding-bottom: 120px;
+            min-height: 100vh;
         }
 
-        .header-section {
-            padding: 25px 20px;
-        }
-
-        .profile-btn {
-            width: 50px;
-            height: 50px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 0 5px 15px rgba(0,0,0,.08);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .search-box {
-            background: white;
-            border-radius: 18px;
-            padding: 12px 18px;
-            box-shadow: 0 5px 20px rgba(0,0,0,.06);
+        .main-heading {
+            font-weight: 600;
+            font-size: 1.65rem;
+            line-height: 1.3;
+            color: #212522;
         }
 
         .section-title {
             font-weight: 600;
-            font-size: 22px;
+            font-size: 1.15rem;
+            color: #212522;
         }
 
-        .travel-card {
-            min-width: 260px;
-            border-radius: 25px;
-            overflow: hidden;
-            background: white;
-            box-shadow: 0 10px 30px rgba(0,0,0,.08);
+        .view-all {
+            color: #3b66f5;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
         }
 
-        .travel-card img {
-            height: 180px;
-            object-fit: cover;
-            width: 100%;
+        /* Header Components */
+        .header-section {
+            padding: 24px 24px 16px 24px;
         }
 
-        .price-badge {
-            background: black;
-            color: white;
-            border-radius: 50px;
-            padding: 8px 14px;
-            font-size: 13px;
-        }
-
-        .recent-card {
-            background: white;
-            border-radius: 20px;
-            padding: 12px;
-            box-shadow: 0 8px 25px rgba(0,0,0,.06);
-            margin-bottom: 15px;
-        }
-
-        .recent-card img {
-            width: 90px;
-            height: 90px;
-            border-radius: 15px;
-            object-fit: cover;
-        }
-
-        .bottom-nav {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 95%;
-            max-width: 500px;
-            background: white;
-            border-radius: 50px;
-            padding: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,.15);
-            z-index: 999;
-        }
-
-        .nav-btn {
-            width: 50px;
-            height: 50px;
+        .notification-btn {
+            width: 44px;
+            height: 44px;
+            background: #ffffff;
             border-radius: 50%;
             display: flex;
-            align-items: center;
             justify-content: center;
-            color: #555;
-            transition: .3s;
+            align-items: center;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            position: relative;
         }
 
-        .nav-btn.active {
-            background: black;
-            color: white;
+        .notification-dot {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 7px;
+            height: 7px;
+            background-color: #ff4b4b;
+            border-radius: 50%;
+            border: 1.5px solid #fff;
         }
 
-        .popular-scroll {
-            overflow-x: auto;
+        /* Search Bar */
+        .search-box {
+            background: var(--search-bg);
+            border-radius: 30px;
+            padding: 12px 20px;
             display: flex;
-            gap: 15px;
-            padding-bottom: 10px;
+            align-items: center;
+        }
+
+        .search-box input {
+            background: transparent;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .search-box input::placeholder {
+            color: #838e85;
+        }
+
+        /* Horizontal Scroll Containers */
+        .popular-scroll {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding: 8px 4px 16px 4px;
+            scrollbar-width: none;
         }
 
         .popular-scroll::-webkit-scrollbar {
             display: none;
         }
 
-        .view-all {
-            color: #2f6df5;
-            text-decoration: none;
+        /* Grid Travel Cards */
+        .travel-card {
+            flex: 0 0 230px;
+            border-radius: 28px;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .travel-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .image-wrapper {
+            width: 100%;
+            height: 160px;
+            padding: 8px 8px 0 8px;
+        }
+
+        .travel-card img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            border-radius: 22px;
+        }
+
+        .card-body-custom {
+            padding: 14px 16px 16px 16px;
+        }
+
+        .card-title-custom {
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #212522;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .price-badge {
+            background: #000000;
+            color: #ffffff;
+            font-weight: 600;
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 0.75rem;
+        }
+
+        .location-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
             font-weight: 500;
+        }
+
+        /* --- FIXED RESPONSIVE RECENT COLLECTION SECTION --- */
+        .recent-card {
+            background: #ffffff;
+            border-radius: 26px;
+            padding: 16px; /* Added padding so content never hugs the edge */
+            box-shadow: var(--card-shadow);
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            
+            /* The Magic Fix: High min-height for premium styling, but heights auto-expands if width drops */
+            min-height: 125px; 
+            height: auto; 
+            
+            display: flex;
+            align-items: center;
+        }
+
+        .recent-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 35px rgba(112, 121, 114, 0.1);
+        }
+
+        .recent-card img {
+            width: 88px; 
+            height: 88px;
+            border-radius: 18px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .recent-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1a1e1b;
+            line-height: 1.4;
+            /* Removed strict text-truncation on title so long text safely wraps down */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .recent-subtitle {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin-top: 4px;
+            /* Subtitle safely displays up to two lines before elegant fade out */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        /* ------------------------------------------------- */
+
+        /* Floating Navigation Dock */
+        .bottom-nav {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 88%;
+            max-width: 360px;
+            background: #ffffff;
+            border-radius: 40px;
+            padding: 8px;
+            box-shadow: var(--nav-shadow);
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555e56;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn.active {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .nav-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Header -->
-
-    <div class="header-section">
-
-        <div class="d-flex justify-content-between align-items-center">
-
-            <div>
-                <h5>Hello, Sunil 👋</h5>
-                <h2 class="fw-bold mt-2">
-                    Where do you want <br>
-                    to go?
-                </h2>
-            </div>
-
-            <div class="profile-btn">
+    <!-- Header UI -->
+    <div class="header-section" data-aos="fade-down">
+        <div class="d-flex justify-content-between align-items-start mt-2">
+            <h1 class="main-heading">Where do you want<br>to go?</h1>
+            <div class="notification-btn">
                 <i class="fa-regular fa-bell"></i>
+                <div class="notification-dot"></div>
             </div>
-
         </div>
 
-        <!-- Search -->
-
-        <div class="search-box mt-4">
-
-            <div class="d-flex align-items-center">
-
-                <i class="fa-solid fa-magnifying-glass text-secondary"></i>
-
-                <input
-                    type="text"
-                    class="form-control border-0 shadow-none ms-2"
-                    placeholder="Find a tourist destination">
-
-                <i class="fa-solid fa-sliders"></i>
-
-            </div>
-
+        <div class="search-box mt-3" style="display: flex; align-items: center; background: #f0f2f0; padding: 10px 16px; border-radius: 24px;">
+            <i class="fa-solid fa-magnifying-glass text-muted me-2" id="searchIconBtn" style="font-size: 0.95rem; cursor: pointer;"></i>
+            
+            <input type="text" id="destinationInput" class="form-control border-0 shadow-none p-0" style="background: transparent;" placeholder="Find a tourist destination">
         </div>
 
+    <script>
+    // Function to handle redirection logic smoothly
+    function executeSearchRedirect() {
+        const inputField = document.getElementById('destinationInput');
+        const queryValue = inputField.value.trim();
+        
+        if (queryValue.length > 0) {
+            window.location.href = `search.html?query=${encodeURIComponent(queryValue)}`;
+        }
+    }
+
+    document.getElementById('destinationInput').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            executeSearchRedirect();
+        }
+    });
+
+    document.getElementById('searchIconBtn').addEventListener('click', function() {
+        executeSearchRedirect();
+    });
+    </script>
     </div>
 
     <!-- Popular Travel -->
-
-    
-    <div class="container-fluid px-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="section-title">Popular Travel</h4>
-        <a href="#" class="view-all">View All</a>
-    </div>
-
-    <div class="popular-scroll" id="popularTravelContainer">
-    </div>
-
-</div>
-
-<script>
-    async function loadPopularTravel() {
-
-    const container = document.getElementById(
-        "popularTravelContainer"
-    );
-
-    container.innerHTML = `
-        <div class="text-center w-100">
-            Loading...
+    <div class="container-fluid px-4 mt-2">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="section-title">Popular travel</h2>
+            <a href="#" class="view-all">View all</a>
         </div>
-    `;
-
-    try {
-
-        const response = await fetch(
-            "https://tourandtravels-nine.vercel.app/api/get/sundarikanya1?category=prayagraj&page=1"
-        );
-
-        const result = await response.json();
-
-        container.innerHTML = "";
-
-        result.data.forEach(item => {
-
-            const card = document.createElement("div");
-
-            card.className = "travel-card";
-
-            card.setAttribute(
-                "data-aos",
-                "fade-up"
-            );
-
-            card.innerHTML = `
-                <a href="details.html?id=${item.id}"
-                   style="text-decoration:none;color:inherit">
-
-                    <img src="${item.thumbnail}" 
-                         alt="${item.title}">
-
-                    <div class="p-3">
-
-                        <h6 class="fw-semibold">
-                            ${item.title}
-                        </h6>
-
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-
-                            <small>
-                                <i class="fa-solid fa-location-dot text-danger"></i>
-                                ${item.location || "India"}
-                            </small>
-
-                            <span class="price-badge">
-                                View
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </a>
-            `;
-
-            container.appendChild(card);
-
-        });
-
-    } catch (error) {
-
-        console.error(error);
-
-        container.innerHTML = `
-            <div class="text-danger">
-                Failed to load data
-            </div>
-        `;
-    }
-}
-
-loadPopularTravel();
-</script>
-
-    
-    <div class="container-fluid px-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-
-        <h4 class="section-title">
-            Trending Travel
-        </h4>
-
-        <a href="all.html?category=Mumbai"
-           class="view-all">
-            View All
-        </a>
-
+        <div class="popular-scroll" id="popularTravelContainer"></div>
     </div>
 
-    <div class="popular-scroll"
-         id="mumbaiTravelContainer">
+    <!-- Trending Travel -->
+    <div class="container-fluid px-4 mt-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="section-title">Trending travel</h2>
+            <a href="all.html?category=Mumbai" class="view-all">View all</a>
+        </div>
+        <div class="popular-scroll" id="mumbaiTravelContainer"></div>
     </div>
 
-</div>
-
-
-<script>
-    async function loadMumbaiTravel() {
-
-    const container =
-        document.getElementById(
-            "mumbaiTravelContainer"
-        );
-
-    try {
-
-        const response = await fetch(
-            "https://tourandtravels-nine.vercel.app/api/get/sundarikanya1?category=Mumbai&page=1"
-        );
-
-        const result = await response.json();
-
-        container.innerHTML = "";
-
-        if (!result.data ||
-            result.data.length === 0) {
-
-            container.innerHTML =
-                "<p>No destinations found.</p>";
-
-            return;
-        }
-
-        result.data.forEach(item => {
-
-            const card =
-                document.createElement("div");
-
-            card.className =
-                "travel-card";
-
-            card.setAttribute(
-                "data-aos",
-                "fade-up"
-            );
-
-            card.innerHTML = `
-
-                <a href="details.html?id=${item.id}"
-                   style="
-                   text-decoration:none;
-                   color:inherit;
-                   ">
-
-                    <img
-                        src="${item.thumbnail}"
-                        alt="${item.title}"
-                        loading="lazy"
-                    >
-
-                    <div class="p-3">
-
-                        <h6 class="fw-semibold">
-                            ${item.title}
-                        </h6>
-
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-
-                            <small>
-                                <i class="fa-solid fa-location-dot text-danger"></i>
-                                ${item.location || 'Mumbai'}
-                            </small>
-
-                            <span class="price-badge">
-                                Explore
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </a>
-
-            `;
-
-            container.appendChild(card);
-
-        });
-
-    } catch (error) {
-
-        console.error(error);
-
-        container.innerHTML = `
-            <p class="text-danger">
-                Failed to load destinations
-            </p>
-        `;
-    }
-}
-
-loadMumbaiTravel();
-
-</script>
-
-    <div class="container-fluid px-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-
-        <h4 class="section-title">
-            Nearby Travel
-        </h4>
-
-        <a href="#" class="view-all">
-            View All
-        </a>
-
+    <!-- Nearby Travel -->
+    <div class="container-fluid px-4 mt-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="section-title">Nearby travel</h2>
+            <a href="#" class="view-all">View all</a>
+        </div>
+        <div class="popular-scroll" id="nearbyTravelContainer"></div>
     </div>
 
-    <div class="popular-scroll"
-         id="nearbyTravelContainer">
+    <!-- Fixed Recent Collection Grid -->
+    <div class="container-fluid px-4 mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="section-title">Recent Collection</h2>
+            <a href="all.html" class="view-all">View all</a>
+        </div>
+        <div id="recentCollectionContainer"></div>
     </div>
 
-</div>
-
-
-<script>
-
-async function loadNearbyTravel() {
-
-    const container =
-        document.getElementById(
-            "nearbyTravelContainer"
-        );
-
-    container.innerHTML =
-        "<p>Getting location...</p>";
-
-    navigator.geolocation.getCurrentPosition(
-
-        async (position) => {
-
-            try {
-
-                const lat =
-                    position.coords.latitude;
-
-                const lng =
-                    position.coords.longitude;
-
-                const geoRes =
-                    await fetch(
-                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-                    );
-
-                const geoData =
-                    await geoRes.json();
-
-                const state =
-                    geoData.address.state ||
-                    "Uttar Pradesh";
-
-                console.log(
-                    "Detected State:",
-                    state
-                );
-
-                const apiRes =
-                    await fetch(
-                        `https://tourandtravels-nine.vercel.app/api/get/sundarikanya1?category=${encodeURIComponent(state)}&page=1`
-                    );
-
-                const result =
-                    await apiRes.json();
-
-                container.innerHTML = "";
-
-                if (
-                    !result.data ||
-                    result.data.length === 0
-                ) {
-
-                    container.innerHTML =
-                        `<p>No travel places found in ${state}</p>`;
-
-                    return;
-                }
-
-                result.data.forEach(item => {
-
-                    container.innerHTML += `
-
-                    <div class="travel-card">
-
-                        <a href="details.html?id=${item.id}"
-                           style="
-                           text-decoration:none;
-                           color:inherit;
-                           ">
-
-                            <img
-                                src="${item.thumbnail}"
-                                alt="${item.title}"
-                            >
-
-                            <div class="p-3">
-
-                                <h6 class="fw-semibold">
-                                    ${item.title}
-                                </h6>
-
-                                <div class="d-flex justify-content-between align-items-center mt-3">
-
-                                    <small>
-                                        <i class="fa-solid fa-location-dot text-danger"></i>
-                                        ${state}
-                                    </small>
-
-                                    <span class="price-badge">
-                                        Explore
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                        </a>
-
-                    </div>
-
-                    `;
-
-                });
-
-            } catch (err) {
-
-                console.error(err);
-
-                container.innerHTML =
-                    "<p>Failed to load nearby travel.</p>";
-            }
-
-        },
-
-        () => {
-
-            container.innerHTML =
-                "<p>Location permission denied.</p>";
-        }
-
-    );
-
-}
-
-loadNearbyTravel();
-
-</script>
-
-    <!-- Recent Collection -->
-
-    
-    <div class="container-fluid px-4 mt-5">
-
-    <div class="d-flex justify-content-between">
-
-        <h4 class="section-title">
-            Recent Collection
-        </h4>
-
-        <a href="all.html" class="view-all">
-            View All
-        </a>
-
-    </div>
-
-    <div id="recentCollectionContainer"></div>
-
-</div>
-
-<script>
-
-async function loadRecentCollection() {
-
-    const container =
-        document.getElementById(
-            "recentCollectionContainer"
-        );
-
-    container.innerHTML =
-        "<p>Loading...</p>";
-
-    try {
-
-        const response =
-            await fetch(
-                "https://tourandtravels-nine.vercel.app/api/get/sundarikanya?tag=&page=1"
-            );
-
-        const result =
-            await response.json();
-
-        container.innerHTML = "";
-
-        if (
-            !result.data ||
-            result.data.length === 0
-        ) {
-
-            container.innerHTML =
-                "<p>No data found</p>";
-
-            return;
-        }
-
-        result.data.forEach(item => {
-
-            container.innerHTML += `
-
-            <a href="details.html?id=${item.id}"
-               style="
-               text-decoration:none;
-               color:inherit;
-               ">
-
-                <div class="recent-card mt-3">
-
-                    <div class="row align-items-center">
-
-                        <div class="col-4">
-
-                            <img
-                                src="${item.thumbnail}"
-                                alt="${item.title}"
-                                loading="lazy"
-                                onerror="this.src='https://via.placeholder.com/300x200';"
-                            >
-
-                        </div>
-
-                        <div class="col-8">
-
-                            <h6 class="fw-bold">
-                                ${item.title}
-                            </h6>
-
-                            <p class="text-muted small mb-2">
-                                ${item.location || 'India'}
-                            </p>
-
-                            <span class="price-badge">
-                                Explore
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </a>
-
-            `;
-
-        });
-
-    } catch (error) {
-
-        console.error(error);
-
-        container.innerHTML = `
-            <p class="text-danger">
-                Failed to load collection
-            </p>
-        `;
-    }
-}
-
-loadRecentCollection();
-
-</script>
-
-    <!-- Bottom Navigation -->
-
+    <!-- Floating Navigation Bar -->
     <div class="bottom-nav">
-
-        <div class="d-flex justify-content-around">
-
+        <div class="d-flex justify-content-between align-items-center px-1">
             <div class="nav-btn active">
                 <i class="fa-solid fa-house"></i>
             </div>
-
             <div class="nav-btn">
-                <i class="fa-regular fa-map"></i>
+                <i class="fa-regular fa-compass"></i>
             </div>
-
             <div class="nav-btn">
-                <i class="fa-solid fa-plus"></i>
+                <i class="fa-solid fa-plus" style="font-size: 0.95rem;"></i>
             </div>
-
             <div class="nav-btn">
                 <i class="fa-regular fa-heart"></i>
             </div>
-
             <div class="nav-btn">
-                <i class="fa-regular fa-user"></i>
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="Profile" class="nav-avatar">
             </div>
-
         </div>
-
     </div>
 
-    <!-- Scripts -->
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-
+    <!-- Scripts Frameworks -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
 
     <script>
-        AOS.init({
-            duration: 800
+        async function loadPopularTravel() {
+            const container = document.getElementById("popularTravelContainer");
+            try {
+                const response = await fetch("https://tourandtravels-nine.vercel.app/api/get/sundarikanya1?category=prayagraj&page=1");
+                const result = await response.json();
+                container.innerHTML = "";
+
+                result.data.forEach(item => {
+                    const card = document.createElement("div");
+                    card.className = "travel-card";
+                    card.innerHTML = `
+                        <a href="details.html?id=${encodeURIComponent(item.id)}" style="text-decoration:none; color:inherit;">
+                            <div class="image-wrapper">
+                                <img src="${item.thumbnail}" alt="${item.title}" loading="lazy">
+                            </div>
+                            <div class="card-body-custom">
+                                <div class="card-title-custom">${item.title}</div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="location-text text-truncate pe-2">
+                                        <i class="fa-solid fa-location-dot text-danger me-1"></i>${item.location || "India"}
+                                    </div>
+                                    <span class="price-badge">$55.50</span>
+                                </div>
+                            </div>
+                        </a>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function loadMumbaiTravel() {
+            const container = document.getElementById("mumbaiTravelContainer");
+            try {
+                const response = await fetch("https://tourandtravels-nine.vercel.app/api/get/sundarikanya1?category=Mumbai&page=1");
+                const result = await response.json();
+                container.innerHTML = "";
+
+                result.data.forEach(item => {
+                    const card = document.createElement("div");
+                    card.className = "travel-card";
+                    card.innerHTML = `
+                        <a href="details.html?id=${encodeURIComponent(item.id)}" style="text-decoration:none; color:inherit;">
+                            <div class="image-wrapper">
+                                <img src="${item.thumbnail}" alt="${item.title}" loading="lazy">
+                            </div>
+                            <div class="card-body-custom">
+                                <div class="card-title-custom">${item.title}</div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="location-text text-truncate pe-2">
+                                        <i class="fa-solid fa-location-dot text-danger me-1"></i>${item.location || 'Mumbai'}
+                                    </div>
+                                    <span class="price-badge">Explore</span>
+                                </div>
+                            </div>
+                        </a>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function loadNearbyTravel() {
+            const container = document.getElementById("nearbyTravelContainer");
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                try {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+                    const geoData = await geoRes.json();
+                    const state = geoData.address.state || "Uttar Pradesh";
+
+                    const apiRes = await fetch(`https://tourandtravels-nine.vercel.app/api/get/sundarikanya1?category=${encodeURIComponent(state)}&page=1`);
+                    const result = await apiRes.json();
+                    container.innerHTML = "";
+
+                    result.data.forEach(item => {
+                        const card = document.createElement("div");
+                        card.className = "travel-card";
+                        card.innerHTML = `
+                            <a href="details.html?id=${encodeURIComponent(item.id)}" style="text-decoration:none; color:inherit;">
+                                <div class="image-wrapper">
+                                    <img src="${item.thumbnail}" alt="${item.title}">
+                                </div>
+                                <div class="card-body-custom">
+                                    <div class="card-title-custom">${item.title}</div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="location-text text-truncate pe-2">
+                                            <i class="fa-solid fa-location-dot text-danger me-1"></i>${state}
+                                        </div>
+                                        <span class="price-badge">Explore</span>
+                                    </div>
+                                </div>
+                            </a>
+                        `;
+                        container.appendChild(card);
+                    });
+                } catch (err) {
+                    console.error(err);
+                }
+            }, () => {
+                container.innerHTML = "<p class='text-muted ps-1' style='font-size:0.8rem;'>Location permission denied.</p>";
+            });
+        }
+
+        async function loadRecentCollection() {
+            const container = document.getElementById("recentCollectionContainer");
+            try {
+                const response = await fetch("https://tourandtravels-nine.vercel.app/api/get/sundarikanya?tag=&page=1");
+                const result = await response.json();
+                container.innerHTML = "";
+
+                result.data.forEach(item => {
+                    const blockAnchor = document.createElement("a");
+                    blockAnchor.href = `details.html?id=${encodeURIComponent(item.id)}`;
+                    blockAnchor.style.textDecoration = "none";
+                    blockAnchor.style.color = "inherit";
+
+                    blockAnchor.innerHTML = `
+                        <div class="recent-card" data-aos="fade-up">
+                            <div class="d-flex align-items-center justify-content-between w-100">
+                                <div class="d-flex align-items-center min-w-0 flex-grow-1">
+                                    <img src="${item.thumbnail}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/150';">
+                                    <div class="ps-3 min-w-0 pe-2">
+                                        <div class="recent-title mb-1">
+                                            <i class="fa-solid fa-location-dot text-danger me-1" style="font-size:0.85rem;"></i>${item.title}
+                                        </div>
+                                        <div class="recent-subtitle">
+                                            ${item.location || 'Explore premium local destinations and landmarks.'}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex-shrink-0 ps-1">
+                                    <span class="price-badge">$88.80</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(blockAnchor);
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            AOS.init({ duration: 600, once: true });
+            loadPopularTravel();
+            loadMumbaiTravel();
+            loadNearbyTravel();
+            loadRecentCollection();
         });
     </script>
-
 </body>
-
 </html>
